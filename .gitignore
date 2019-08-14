@@ -7,3 +7,9 @@
 
 # Local pyenv version files
 .python-version
+
+# Local test files
+tests/*.py
+tests/*.pyc
+tests/*.failed
+
