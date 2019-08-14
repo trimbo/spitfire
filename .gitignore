@@ -11,5 +11,4 @@
 # Local test files
 tests/*.py
 tests/*.pyc
-tests/*.failed
-
+tests/**/*.failed
