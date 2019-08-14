@@ -186,7 +186,11 @@ static PyTypeObject SanitizedPlaceholderType = {
   0,                                        /* tp_methods */
   0,                                        /* tp_members */
   0,                                        /* tp_getset */
+#if PY_MAJOR_VERSION >= 3
   &PyUnicode_Type,                          /* tp_base */
+#else
+  &PyString_Type,                           /* tp_base */
+#endif
   0,                                        /* tp_dict */
   0,                                        /* tp_descr_get */
   0,                                        /* tp_descr_set */
@@ -224,13 +228,11 @@ PyObject* moduleinit(void)
 
 #if PY_MAJOR_VERSION >= 3
   Skip_Filter_PyString = PyUnicode_InternFromString("skip_filter");
-  // Set the base type and the constructor.
-  SanitizedPlaceholderType.tp_base = &PyUnicode_Type;
+  // Set the constructor.
   SanitizedPlaceholderType.tp_init = PyUnicode_Type.tp_init;
 #else
   Skip_Filter_PyString = PyString_InternFromString("skip_filter");
-  // Set the base type and the constructor.
-  SanitizedPlaceholderType.tp_base = &PyString_Type;
+  // Set the constructor.
   SanitizedPlaceholderType.tp_init = PyString_Type.tp_init;
 #endif
 

@@ -5,7 +5,12 @@
 
 # a few helpful filter functions
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import functools
+import six
 import types
 from spitfire import runtime
 from spitfire.runtime import udn
@@ -37,7 +42,7 @@ def passthrough_filter(value):
 def escape_html(value, quote=True):
     """Replace special characters '&', '<' and '>' by SGML entities."""
     value = simple_str_filter(value)
-    if isinstance(value, basestring):
+    if isinstance(value, six.string_types):
         value = value.replace("&", "&amp;")  # Must be done first!
         value = value.replace("<", "&lt;")
         value = value.replace(">", "&gt;")
@@ -49,8 +54,8 @@ def escape_html(value, quote=True):
 # deprecated
 def safe_values(value):
     """Deprecated - use simple_str_filter instead."""
-    if isinstance(value, (str, unicode, int, long, float,
-                          runtime.UndefinedPlaceholder)):
+    if isinstance(value, (str, six.text_type, float,
+                          runtime.UndefinedPlaceholder) + six.integer_types):
         return value
     else:
         return ''
@@ -58,8 +63,8 @@ def safe_values(value):
 
 def simple_str_filter(value):
     """Return a string if the input type is something primitive."""
-    if isinstance(value, (str, unicode, int, long, float,
-                          runtime.UndefinedPlaceholder)):
+    if isinstance(value, (str, six.text_type, float,
+                          runtime.UndefinedPlaceholder) + six.integer_types):
         # fixme: why do force this conversion here?
         # do we want to be unicode or str?
         return str(value)

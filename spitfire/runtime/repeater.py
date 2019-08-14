@@ -12,7 +12,7 @@ class RepeatTracker(object):
     def __setitem__(self, key, value):
         try:
             self.repeater_map[key].index = value
-        except KeyError, e:
+        except KeyError as e:
             self.repeater_map[key] = Repeater(value)
 
     def __getitem__(self, key):
@@ -62,5 +62,5 @@ class RepeatIterator(object):
         return self
 
     def next(self):
-        index, item = self.src_iterator.next()
+        index, item = next(self.src_iterator)
         return Repeater(index, item, self.length)
