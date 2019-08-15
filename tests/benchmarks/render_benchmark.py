@@ -5,9 +5,8 @@
 
 import copy
 import optparse
+import six
 import string
-import cStringIO
-import StringIO
 import sys
 import timeit
 
@@ -82,8 +81,12 @@ def get_spitfire_tests():
 
     def _spitfire_baked_opts(o):
         o = copy.copy(o)
-        o.baked_mode = True
-        o.generate_unicode = False
+        if six.PY2:
+            o.baked_mode = True
+            o.generate_unicode = False
+        else:
+            o.baked_mode = False
+            o.generate_unicode = True
         return o
 
     baked_opts = _spitfire_baked_opts(default_opts)
@@ -243,21 +246,21 @@ def get_python_tests():
 
     def test_python_stringio():
         """Python StringIO buffer"""
-        buffer = StringIO.StringIO()
+        buffer = six.moves.StringIO()
         _buffer_fn(buffer.write, TABLE_DATA)
-        return buffer.getvalue()
+        return six.ensure_str(buffer.getvalue())
 
     def test_python_cstringio():
         """Python cStringIO buffer"""
-        buffer = cStringIO.StringIO()
+        buffer = six.moves.cStringIO()
         _buffer_fn(buffer.write, TABLE_DATA)
-        return buffer.getvalue()
+        return six.ensure_str(buffer.getvalue())
 
     def test_python_list():
         """Python list concatenation"""
         buffer = []
         _buffer_fn(buffer.append, TABLE_DATA)
-        return ''.join(buffer)
+        return six.ensure_str(''.join(buffer))
 
     return [
         test_python_template,
@@ -415,13 +418,13 @@ def time_test(test, number):
         result = '   (not installed?)'
     else:
         result = '%16.2f ms' % (1000 * time)
-    print '%-35s %s' % (test.__doc__, result)
+    print('%-35s %s' % (test.__doc__, result))
 
 
 def run_tests(which=None, number=100, compare=False):
     if number > 100:
-        print 'Running benchmarks %d times each...' % number
-        print
+        print('Running benchmarks %d times each...' % number)
+        print()
     if compare:
         groups = ['cheetah', 'django', 'jinja2', 'mako', 'python', 'spitfire']
     else:
@@ -455,8 +458,8 @@ def run_tests(which=None, number=100, compare=False):
 
 
 def profile_tests(which=None):
-    print 'Profiling...'
-    print
+    print('Profiling...')
+    print()
     import hotshot, hotshot.stats
     profile_data = 'template.prof'
     profile = hotshot.Profile(profile_data)
@@ -464,9 +467,9 @@ def profile_tests(which=None):
     stats = hotshot.stats.load(profile_data)
     stats.strip_dirs()
     stats.sort_stats('time', 'calls')
-    print
+    print()
     stats.print_stats()
-    print 'Profile data written to %s' % profile_data
+    print('Profile data written to %s' % profile_data)
 
 
 def main():
