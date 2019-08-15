@@ -131,8 +131,11 @@ class TestRunner(object):
 
         classname = util.filename2classname(filename)
         modulename = util.filename2modulename(filename)
+        
         test_output_path = os.path.join(self.options.test_output,
                                         classname + '.txt')
+        if six.PY3 and os.path.exists(test_output_path + 'py3'):
+            test_output_path += "py3"
 
         if self.options.verbose:
             sys.stderr.write(modulename + ' ... ')
