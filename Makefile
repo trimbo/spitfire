@@ -16,6 +16,7 @@
 
 
 PYTHON ?= python
+PYTHON2 ?= python2
 PIP ?= pip
 YAPF ?= yapf
 
@@ -26,10 +27,10 @@ else
   PIP_INSTALL_FLAGS=--user
 endif
 
-COMPILER = $(PYTHON) scripts/spitfire-compile
+COMPILER = $(PYTHON) scripts/spitfire-compile --verbose
 CRUNNER = $(PYTHON) scripts/crunner.py
 UNITTEST = $(PYTHON) -m unittest
-YAPPS = $(PYTHON) third_party/yapps2/yapps2.py
+YAPPS = $(PYTHON2) third_party/yapps2/yapps2.py
 
 
 all: build
@@ -66,7 +67,7 @@ unit_tests: build
 
 test_function_registry: build
 	$(call _clean_tests)
-	$(CRUNNER) -O3 --compile --function-registry-file tests/test-function-registry.cnf tests/*.txtx
+	$(CRUNNER) -O3 --compile --verbose --function-registry-file tests/test-function-registry.cnf tests/*.txtx
 
 no_whitespace_tests: build
 	$(call _clean_tests)
