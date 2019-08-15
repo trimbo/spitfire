@@ -463,10 +463,10 @@ parser _SpitfireParser:
 
   rule stringliteral:
     '"' DOUBLE_QUOTE_STR '"'
-    {{ return unicode(eval('"%s"' % DOUBLE_QUOTE_STR)) }}
+    {{ return six.ensure_text(eval('"%s"' % DOUBLE_QUOTE_STR)) }}
     |
     "'" SINGLE_QUOTE_STR "'"
-    {{ return unicode(eval("'%s'" % SINGLE_QUOTE_STR)) }}
+    {{ return six.ensure_text(eval("'%s'" % SINGLE_QUOTE_STR)) }}
 
   # had to factor out the floats
   rule literal:

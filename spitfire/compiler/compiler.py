@@ -6,6 +6,7 @@
 import copy
 import gc
 import os.path
+import six
 import sys
 
 from spitfire.compiler import analyzer
@@ -120,7 +121,7 @@ class Compiler(object):
         self._hoisted_tree = None
         self._source_code = None
 
-        for key, value in kargs.iteritems():
+        for key, value in six.iteritems(kargs):
             setattr(self, key, value)
 
         if self.analyzer_options is None:
@@ -297,7 +298,7 @@ class Compiler(object):
         outfile_path = os.path.join(self.output_directory, relative_dir,
                                     outfile_name)
         outfile = open(outfile_path, 'w')
-        outfile.write(src_code)
+        outfile.write(six.ensure_str(src_code))
         outfile.close()
 
     def registry_contains(self, fname):

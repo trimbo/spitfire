@@ -3,7 +3,11 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-import StringIO
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import six
 
 
 class TreeWalkError(Exception):
@@ -41,9 +45,9 @@ def flatten_tree(root):
 
 def print_tree(root, output=None):
     if output:
-        print >> output, flatten_tree(root)
+        print(flatten_tree(root), file=output)
     else:
-        print flatten_tree(root)
+        print(flatten_tree(root))
 
 
 # perform an in-order traversal of the AST and call the generate methods
@@ -55,7 +59,7 @@ class TreeVisitor(object):
 
     def __init__(self, ast_root):
         self.ast_root = ast_root
-        self.output = StringIO.StringIO()
+        self.output = six.StringIO()
 
     def get_text(self):
         root = self.build_text(self.ast_root)[0]
@@ -63,14 +67,14 @@ class TreeVisitor(object):
         text = self.output.getvalue()
         try:
             text = text.encode(self.ast_root.encoding)
-        except AttributeError, e:
+        except AttributeError as e:
             pass
         return text
 
     def generate_text(self, visit_node):
         try:
             return visit_node.node_repr
-        except AttributeError, e:
+        except AttributeError as e:
             raise TreeWalkError("can't write visit_node: %s\n\t%s" %
                                 (visit_node, e))
 
@@ -289,7 +293,7 @@ class TreeVisitor(object):
     visitASTOptionalWhitespaceNode = visitASTLiteralNode
 
     def visitDefault(self, node):
-        return [VisitNode('%s %s' % (node.__class__.__name__, node.name))]
+        return [VisitNode('%s %s' % (node.__class__.__name__, node.name if node else "None"))]
 
     def visitASTMacroNode(self, node):
-        return [VisitNode('%s %s' % (node.__class__.__name__, node.value))]
+        return [VisitNode('%s %s' % (node.__class__.__name__, node.value if node else "None"))]

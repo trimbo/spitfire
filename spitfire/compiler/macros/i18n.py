@@ -5,8 +5,8 @@
 
 import sys
 
-import cStringIO as StringIO
-
+import six
+from six.moves import cStringIO
 from spitfire.compiler import analyzer
 from spitfire.compiler import ast
 from spitfire.compiler import util
@@ -35,7 +35,7 @@ def make_placeholder_name(placeholder_node):
 def make_i18n_message(raw_msg, macro_ast):
     # top should be a fragment and due to the limited syntax, we can more or
     # less scan this one level of nodes -- there are no nested i18n sections yet
-    output = StringIO.StringIO()
+    output = cStringIO()
     for i, n in enumerate(macro_ast.child_nodes):
         #print i, type(n), "start", n.start, "end", n.end
         #print "raw:", "'%s'" % raw_msg[n.start:n.end]

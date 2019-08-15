@@ -3,9 +3,14 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 
-import cStringIO as StringIO
+import six
+import six.moves.builtins
 
 from spitfire.compiler import ast
 
@@ -58,7 +63,7 @@ class CodeGenerator(object):
         # the stack.
         self.function_stack = []
         self.options = options
-        self.output = StringIO.StringIO()
+        self.output = six.StringIO()
         self.template = None
         self.baked_mode = False
 
@@ -70,7 +75,7 @@ class CodeGenerator(object):
     def generate_python(self, code_node):
         try:
             return code_node.src_line
-        except AttributeError, e:
+        except AttributeError as e:
             self.compiler.error(CodegenError("can't write code_node: %s\n\t%s" %
                                              (code_node, e)))
 
@@ -316,7 +321,7 @@ class CodeGenerator(object):
 
     def codegenASTLiteralNode(self, node):
         if (self.options and not self.options.generate_unicode and
-                isinstance(node.value, basestring)):
+                isinstance(node.value, six.string_types)):
             # If the node is the empty string, we should mark it as sanitized by
             # default. Eventually, all string literals should be marked as
             # sanitized.
@@ -694,7 +699,7 @@ class CodeGenerator(object):
         try:
             return [CodeNode(line % vars(node))
                     for line in v['AST%s_tmpl' % node.__class__.__name__]]
-        except KeyError, e:
+        except KeyError as e:
             self.compiler.error(CodegenError("no codegen for %s %s" % (type(
                 node), vars(node))))
 

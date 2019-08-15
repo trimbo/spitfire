@@ -3,11 +3,15 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 import re
 import string
 import unicodedata
+from six.moves import zip
 
-normal_characters = string.lowercase + string.uppercase
+normal_characters = string.ascii_lowercase + string.ascii_uppercase
 mangled_character_names = [
     'LATIN SMALL LETTER A WITH RING ABOVE',
     'LATIN SMALL LETTER THORN',
@@ -63,8 +67,8 @@ mangled_character_names = [
     'LATIN CAPITAL LETTER Z WITH ACUTE',
 ]
 
-char_map = dict(zip(normal_characters, [unicodedata.lookup(name)
-                                        for name in mangled_character_names]))
+char_map = dict(list(zip(normal_characters, [unicodedata.lookup(name)
+                                        for name in mangled_character_names])))
 
 
 # return a string with interesting unicode characters to make sure

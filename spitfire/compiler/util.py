@@ -4,10 +4,11 @@
 # license that can be found in the LICENSE file.
 
 import logging
-import new
 import os.path
 import re
+import six
 import sys
+import types
 
 from spitfire.compiler import options
 from spitfire.compiler import parser
@@ -18,8 +19,7 @@ valid_identfier = re.compile('[_a-z]\w*', re.IGNORECASE)
 
 
 def filename2classname(filename):
-    classname = os.path.splitext(os.path.basename(filename))[0].replace('-',
-                                                                        '_')
+    classname = os.path.splitext(os.path.basename(filename))[0].replace('-', '_')
     if not valid_identfier.match(classname):
         raise SyntaxError('filename "%s" must yield valid python identifier: %s'
                           % (filename, classname))
@@ -57,7 +57,7 @@ def parse_template(src_text, xspt_mode=False):
 def read_template_file(filename):
     f = open(filename, 'r')
     try:
-        return f.read().decode('utf8')
+        return six.ensure_str(f.read())
     finally:
         f.close()
 
@@ -106,7 +106,7 @@ def load_template_file(filename,
     spt_compiler = compiler.Compiler(analyzer_options=analyzer_options,
                                      xspt_mode=xspt_mode)
     if compiler_options:
-        for k, v in compiler_options.iteritems():
+        for k, v in six.iteritems(compiler_options):
             setattr(spt_compiler, k, v)
     class_name = filename2classname(filename)
     if not module_name:
@@ -128,7 +128,7 @@ def load_template(template_src,
     from spitfire.compiler import compiler
     spt_compiler = compiler.Compiler(analyzer_options=analyzer_options)
     if compiler_options:
-        for k, v in compiler_options.iteritems():
+        for k, v in six.iteritems(compiler_options):
             setattr(spt_compiler, k, v)
     src_code = spt_compiler.compile_template(template_src, class_name)
     module = load_module_from_src(src_code, filename, module_name)
@@ -137,11 +137,11 @@ def load_template(template_src,
 
 # a helper method to import a template without having to save it to disk
 def load_module_from_src(src_code, filename, module_name):
-    module = new.module(module_name)
+    module = types.ModuleType(module_name)
     sys.modules[module_name] = module
 
     bytecode = compile(src_code, filename, 'exec')
-    exec bytecode in module.__dict__
+    exec(bytecode, module.__dict__)
     return module
 
 

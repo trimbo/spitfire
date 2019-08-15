@@ -3,9 +3,15 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-import __builtin__
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import copy
 import traceback
+
+import six
+import six.moves.builtins
 
 
 # this is a horrible hack to let the tree modify itself during conversion
@@ -61,8 +67,8 @@ class ASTNode(object):
             else:
                 try:
                     node.parent = self
-                except AttributeError, e:
-                    print e, node
+                except AttributeError as e:
+                    print(e, node)
                     raise
                 self.child_nodes.append(node)
 
@@ -898,7 +904,7 @@ class FragmentNode(ASTNode):
 
 
 class TemplateNode(ASTNode):
-    __builtin_set = frozenset(dir(__builtin__))
+    __builtin_set = frozenset(dir(six.moves.builtins))
 
     def __init__(self, classname=None, pos=None, **kargs):
         ASTNode.__init__(self, pos=pos, **kargs)
@@ -1047,7 +1053,7 @@ class OrderedDict(object):
             yield key, self._dict[key]
 
     def update(self, ordered_dict):
-        for key, value in ordered_dict.iteritems():
+        for key, value in six.iteritems(ordered_dict):
             self[key] = value
 
     def __str__(self):

@@ -7,6 +7,7 @@ import sys
 import traceback
 import xml.dom.minidom
 
+from six.moves import range
 from spitfire.compiler import ast
 from spitfire.compiler import util
 
@@ -17,9 +18,9 @@ def debug(func_name, dom_node):
     if not enable_debug:
         return
     if dom_node.attributes:
-        print func_name, dom_node.nodeName, dom_node.attributes.keys()
+        print(func_name, dom_node.nodeName, list(dom_node.attributes.keys()))
     else:
-        print func_name, dom_node.nodeName
+        print(func_name, dom_node.nodeName)
 
 
 class XHTML2AST(object):
@@ -73,7 +74,7 @@ class XHTML2AST(object):
 
             # fixme: do I need keys() here? also, i think that attribute can be
             # None
-            attr_name_list = dom_node.attributes.keys()
+            attr_name_list = list(dom_node.attributes.keys())
             processed_any_op = False
             for op in op_precedence:
                 op_attr_name = '%s:%s' % (self.namespace, op)
@@ -93,7 +94,7 @@ class XHTML2AST(object):
             attr_output_ast = []
             attr_prune_list = []
             # this is horribly un-pythonic - i'm having Java flashbacks
-            for i in xrange(dom_node.attributes.length):
+            for i in range(dom_node.attributes.length):
                 attr = dom_node.attributes.item(i)
                 if attr.prefix == self.attr_op_namespace:
                     attr_prune_list.append(attr.localName)
@@ -106,7 +107,7 @@ class XHTML2AST(object):
                 try:
                     dom_node.removeAttribute(attr_name)
                 except xml.dom.NotFoundErr:
-                    print "ignoring missing", attr_name
+                    print("ignoring missing", attr_name)
 
             if not processed_any_op:
                 node_list.extend(self.handle_default(dom_node,
@@ -354,10 +355,10 @@ if __name__ == '__main__':
     x2a = XHTML2AST()
     filename = sys.argv[1]
     tnode = x2a.build_template(filename)
-    print tnode
+    print(tnode)
     classname = spitfire.compiler.util.filename2classname(filename)
     src = spitfire.compiler.util.compile_ast(tnode, classname)
-    print src
+    print(src)
     module = spitfire.compiler.util.load_module_from_src(src, '<none>',
                                                          classname)
     tclass = getattr(module, classname)

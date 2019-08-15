@@ -3,17 +3,23 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-import __builtin__
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import copy
+from functools import reduce
 import logging
 import os.path
 import re
 
+import six
+import six.moves.builtins
 from spitfire.compiler import ast
 from spitfire.compiler import analyzer
 from spitfire.compiler import walker
 
-builtin_names = vars(__builtin__)
+builtin_names = vars(six.moves.builtins)
 
 _BINOP_INVALID_COUNT = 1000  # Any value > 0 will work.
 _BINOP_INITIAL_COUNT = 0
@@ -119,7 +125,7 @@ def _get_common_aliased_expression_map(*scopes):
     clean_key_sets = []
     for scope in scopes:
         clean_scope_keys = set()
-        for alias in scope.aliased_expression_map.iterkeys():
+        for alias in six.iterkeys(scope.aliased_expression_map):
             if _is_clean(alias, scope):
                 clean_scope_keys.add(alias)
         clean_key_sets.append(clean_scope_keys)
@@ -153,7 +159,7 @@ class _BaseAnalyzer(object):
     def optimize_ast(self):
         self.visit_ast(self.ast_root)
         if self.options.debug:
-            print "unoptimized_node_types", self.unoptimized_node_types
+            print("unoptimized_node_types", self.unoptimized_node_types)
         return self.ast_root
 
     # build an AST node list from a single parse node
@@ -163,7 +169,7 @@ class _BaseAnalyzer(object):
         method_name = 'analyze%s' % node.__class__.__name__
         method = getattr(self, method_name, self.default_optimize_node)
         if method_name in self.compiler.debug_flags:
-            print method_name, node
+            print(method_name, node)
         return method(node)
 
     def skip_analyze_node(self, node):
@@ -240,7 +246,7 @@ class _BaseAnalyzer(object):
             #print "  parent_block", parent_block
             #print "  parent_scope", parent_block.scope
             # NOTE: need to iterate over items, in case we modify something
-            items = conditional_node.scope.aliased_expression_map.items()
+            items = list(conditional_node.scope.aliased_expression_map.items())
             for alias_node, alias in items:
                 #print "  check alias:", alias
                 #print "    alias_node:", alias_node
@@ -626,11 +632,11 @@ class OptimizationAnalyzer(_BaseAnalyzer):
                 alias_name = _generate_filtered_placeholder(
                     filter_node.expression)
                 if alias_name in scope.alias_name_set:
-                    print "duplicate alias_name", alias_name
-                    print "scope", scope
-                    print "scope.alias_name_set", scope.alias_name_set
-                    print " ".join("scope.aliased_expression_map",
-                                   scope.aliased_expression_map)
+                    print("duplicate alias_name", alias_name)
+                    print("scope", scope)
+                    print("scope.alias_name_set", scope.alias_name_set)
+                    print(" ".join("scope.aliased_expression_map",
+                                   scope.aliased_expression_map))
                     return
 
                 alias = ast.IdentifierNode(alias_name, pos=filter_node.pos)
@@ -766,11 +772,11 @@ class OptimizationAnalyzer(_BaseAnalyzer):
                 alias_format = '%s_%s'
             alias_name = alias_format % (node.expression.name, node.name)
             if alias_name in scope.alias_name_set:
-                print "duplicate alias_name", alias_name
-                print "scope", scope
-                print "scope.alias_name_set", scope.alias_name_set
-                print " ".join("scope.aliased_expression_map",
-                               scope.aliased_expression_map)
+                print("duplicate alias_name", alias_name)
+                print("scope", scope)
+                print("scope.alias_name_set", scope.alias_name_set)
+                print(" ".join("scope.aliased_expression_map",
+                               scope.aliased_expression_map))
                 return
 
             alias = ast.IdentifierNode(alias_name)

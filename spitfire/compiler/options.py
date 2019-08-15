@@ -5,7 +5,7 @@
 
 import copy
 import os
-
+import six
 
 class AnalyzerOptions(object):
 
@@ -125,7 +125,7 @@ class AnalyzerOptions(object):
     @classmethod
     def get_help(cls):
         return ', '.join(['[no-]' + name.replace('_', '-')
-                          for name, value in vars(cls()).iteritems()
+                          for name, value in six.iteritems(vars(cls()))
                           if not name.startswith('__') and type(value) == bool])
 
 
