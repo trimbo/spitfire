@@ -16,7 +16,7 @@
 
 
 PYTHON ?= python
-PYTHON2 ?= python2
+PYTHON2 ?= python2.7
 PIP ?= pip
 YAPF ?= yapf
 
