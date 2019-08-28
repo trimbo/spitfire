@@ -16,7 +16,7 @@
 
 
 PYTHON ?= python
-PYTHON2 ?= python2.7
+
 PIP ?= pip
 YAPF ?= yapf
 
@@ -30,7 +30,7 @@ endif
 COMPILER = $(PYTHON) scripts/spitfire-compile --verbose
 CRUNNER = $(PYTHON) scripts/crunner.py
 UNITTEST = $(PYTHON) -m unittest
-YAPPS = $(PYTHON2) third_party/yapps2/yapps2.py
+YAPPS = $(PYTHON) third_party/yapps2/yapps2.py
 
 
 all: build
